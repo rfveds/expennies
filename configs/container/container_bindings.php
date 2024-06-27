@@ -1,9 +1,11 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 use App\Config;
 use App\Enum\AppEnvironment;
+use Doctrine\DBAL\DriverManager;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
 use Psr\Container\ContainerInterface;
@@ -20,17 +22,25 @@ use Twig\Extra\Intl\IntlExtension;
 use function DI\create;
 
 return [
-    Config::class                 => create(Config::class)->constructor(require CONFIG_PATH . '/app.php'),
-    EntityManager::class          => fn(Config $config) => EntityManager::create(
-        $config->get('doctrine.connection'),
-        ORMSetup::createAttributeMetadataConfiguration(
+    Config::class => create(Config::class)->constructor(require CONFIG_PATH . '/app.php'),
+//    EntityManager::class          => fn(Config $config) => EntityManager::create(
+//        $config->get('doctrine.connection'),
+//        ORMSetup::createAttributeMetadataConfiguration(
+//            $config->get('doctrine.entity_dir'),
+//            $config->get('doctrine.dev_mode')
+//        )
+//    ),
+    EntityManager::class => function (Config $config) {
+        $conn = DriverManager::getConnection($config->get('doctrine.connection'));
+        $configuration =  ORMSetup::createAttributeMetadataConfiguration(
             $config->get('doctrine.entity_dir'),
             $config->get('doctrine.dev_mode')
-        )
-    ),
-    Twig::class                   => function (Config $config, ContainerInterface $container) {
+        );
+        return new EntityManager($conn, $configuration);
+    },
+    Twig::class => function (Config $config, ContainerInterface $container) {
         $twig = Twig::create(VIEW_PATH, [
-            'cache'       => STORAGE_PATH . '/cache/templates',
+            'cache' => STORAGE_PATH . '/cache/templates',
             'auto_reload' => AppEnvironment::isDevelopment($config->get('app_environment')),
         ]);
 
@@ -43,7 +53,7 @@ return [
     /**
      * The following two bindings are needed for EntryFilesTwigExtension & AssetExtension to work for Twig
      */
-    'webpack_encore.packages'     => fn() => new Packages(
+    'webpack_encore.packages' => fn() => new Packages(
         new Package(new JsonManifestVersionStrategy(BUILD_PATH . '/manifest.json'))
     ),
     'webpack_encore.tag_renderer' => fn(ContainerInterface $container) => new TagRenderer(

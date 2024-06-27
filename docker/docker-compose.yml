@@ -21,7 +21,7 @@ services:
     container_name: expennies-nginx
     restart: always
     ports:
-      - "8000:80"
+      - "8010:80"
     volumes:
       - ../:/var/www
       - ./nginx:/etc/nginx/conf.d
@@ -29,9 +29,10 @@ services:
     container_name: expennies-db
     image: mysql:8.0
     volumes:
-      - ./storage/mysql:/var/lib/mysql
+      - ./storage/mysql:/var/lib/mysql:rw
+    user: mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
     ports:
-      - "3306:3306"
+      - "3307:3306"
