@@ -9,15 +9,20 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\CustomIdGenerator;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\PrePersist;
+use Doctrine\ORM\Mapping\PreUpdate;
 use Doctrine\ORM\Mapping\Table;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 #[Entity]
 #[Table(name: 'users')]
+#[HasLifecycleCallbacks]
 class User
 {
     #[Id]
@@ -51,6 +56,15 @@ class User
     {
         $this->categories = new ArrayCollection();
         $this->transactions = new ArrayCollection();
+    }
+
+    #[PrePersist, PreUpdate]
+    public function updateTimestamps(LifecycleEventArgs $args): void
+    {
+        if (!isset($this->createdAt)) {
+            $this->createdAt = new \DateTime();
+        }
+        $this->updatedAt = new \DateTime();
     }
 
     public function getId(): UuidInterface

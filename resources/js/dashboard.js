@@ -1,2 +1,1 @@
 import "../css/dashboard.scss"
-
