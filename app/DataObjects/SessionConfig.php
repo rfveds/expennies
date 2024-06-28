@@ -8,7 +8,6 @@ use App\Enum\SameSite;
 
 readonly class SessionConfig
 {
-
     public function __construct(
         public string   $name,
         public bool     $secure,

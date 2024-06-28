@@ -5,11 +5,13 @@ declare(strict_types=1);
 use App\Auth;
 use App\Config;
 use App\Contracts\AuthInterface;
+use App\Contracts\RequestValidatorFactoryInterface;
 use App\Contracts\SessionInterface;
 use App\Contracts\UserProviderServiceInterface;
 use App\DataObjects\SessionConfig;
 use App\Enum\AppEnvironment;
 use App\Enum\SameSite;
+use App\RequestValidators\RequestValidatorFactory;
 use App\Service\UserProviderService;
 use App\Session;
 use Doctrine\DBAL\DriverManager;
@@ -82,7 +84,7 @@ return [
     ),
     AuthInterface::class => fn(ContainerInterface $container) => $container->get(Auth::class),
     UserProviderServiceInterface::class => fn(ContainerInterface $container) => $container->get(UserProviderService::class),
-    SessionInterface::class             => fn(Config $config) => new Session(
+    SessionInterface::class => fn(Config $config) => new Session(
         new SessionConfig(
             $config->get('session.name', ''),
             $config->get('session.secure', true),
@@ -91,4 +93,5 @@ return [
             $config->get('session.flash_key', '_flash')
         )
     ),
+    RequestValidatorFactoryInterface::class => fn(ContainerInterface $container) => $container->get(RequestValidatorFactory::class),
 ];
