@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -57,13 +57,13 @@ readonly class AuthController
         $v->rule('email', 'email');
         $v->rule('equals', 'confirmPassword', 'password')->label('Confirm Password');
         $v->rule(
-            fn($field, $value, $params, $fields) => ! $this->entityManager->getRepository(User::class)->count(
+            fn($field, $value, $params, $fields) => !$this->entityManager->getRepository(User::class)->count(
                 ['email' => $value]
             ),
             'email'
         )->message('User with the given email address already exists');
 
-        if (! $v->validate()) {
+        if (!$v->validate()) {
             throw new ValidationException($v->errors());
         }
 
@@ -77,5 +77,27 @@ readonly class AuthController
         $this->entityManager->flush();
 
         return $response;
+    }
+
+    public function login(Request $request, Response $response)
+    {
+        $data = $request->getParsedBody();
+
+        $v = new Validator($data);
+
+        $v->rule('required', ['email', 'password']);
+        $v->rule('email', 'email');
+
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $data['email']]);
+
+        if (!$user || !password_verify($data['password'], $user->getPassword())) {
+            throw new ValidationException(['password' => ['Invalid email or password']]);
+        }
+
+        session_regenerate_id();
+
+        $_SESSION['user'] = $user->getId();
+
+        return $response->withHeader('Location', '/');
     }
 }
