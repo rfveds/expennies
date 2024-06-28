@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Contracts\UserInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -17,13 +18,12 @@ use Doctrine\ORM\Mapping\PreUpdate;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
-use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 #[Entity]
 #[Table(name: 'users')]
 #[HasLifecycleCallbacks]
-class User
+class User implements UserInterface
 {
     #[Id]
     #[Column(type: "uuid", unique: true)]
