@@ -9,6 +9,10 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Slim\App;
+use Slim\Factory\AppFactory;
+use Slim\Psr7\Factory\ResponseFactory;
 use Slim\Views\Twig;
 use Symfony\Bridge\Twig\Extension\AssetExtension;
 use Symfony\Component\Asset\Package;
@@ -22,17 +26,27 @@ use Twig\Extra\Intl\IntlExtension;
 use function DI\create;
 
 return [
+    App::class => function (ContainerInterface $container) {
+        AppFactory::setContainer($container);
+
+        $addMiddlewares = require CONFIG_PATH . '/middleware.php';
+        $router         = require CONFIG_PATH . '/routes/web.php';
+
+        $app = AppFactory::create();
+
+        $router($app);
+
+        $addMiddlewares($app);
+
+        return $app;
+    },
+    ResponseFactoryInterface::class => function () {
+        return new ResponseFactory();
+    },
     Config::class => create(Config::class)->constructor(require CONFIG_PATH . '/app.php'),
-//    EntityManager::class          => fn(Config $config) => EntityManager::create(
-//        $config->get('doctrine.connection'),
-//        ORMSetup::createAttributeMetadataConfiguration(
-//            $config->get('doctrine.entity_dir'),
-//            $config->get('doctrine.dev_mode')
-//        )
-//    ),
     EntityManager::class => function (Config $config) {
         $conn = DriverManager::getConnection($config->get('doctrine.connection'));
-        $configuration =  ORMSetup::createAttributeMetadataConfiguration(
+        $configuration = ORMSetup::createAttributeMetadataConfiguration(
             $config->get('doctrine.entity_dir'),
             $config->get('doctrine.dev_mode')
         );

@@ -2,8 +2,8 @@
 
 declare(strict_types = 1);
 
-use App\Controllers\AuthController;
-use App\Controllers\HomeController;
+use App\Controller\AuthController;
+use App\Controller\HomeController;
 use Slim\App;
 
 return function (App $app) {
