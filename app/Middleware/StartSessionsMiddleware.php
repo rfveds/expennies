@@ -23,6 +23,10 @@ readonly class StartSessionsMiddleware implements MiddlewareInterface
         $this->session->start();
 
         $response = $handler->handle($request);
+        // TODO: Check for XHR request
+        if ($request->getMethod() === 'GET') {
+            $this->session->put('previousUrl', (string)$request->getUri());
+        }
 
         $this->session->save();
 
