@@ -87,7 +87,8 @@ return [
             $config->get('session.name', ''),
             $config->get('session.secure', true),
             $config->get('session.httponly', true),
-            SameSite::from($config->get('session.samesite', 'lax'))
+            SameSite::from($config->get('session.samesite', 'lax')),
+            $config->get('session.flash_key', '_flash')
         )
     ),
 ];

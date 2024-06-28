@@ -20,4 +20,10 @@ interface SessionInterface
 
     public function get(string $key, mixed $default = null): mixed;
 
+    public function has(string $key): bool;
+
+    public function flash(string $key, array $messages): void;
+
+    public function getFlash(string $key): array;
+
 }

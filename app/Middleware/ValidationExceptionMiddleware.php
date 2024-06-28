@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Middleware;
 
+use App\Contracts\SessionInterface;
 use App\Exception\ValidationException;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -13,7 +14,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 readonly class ValidationExceptionMiddleware implements MiddlewareInterface
 {
-    public function __construct(private ResponseFactoryInterface $responseFactory)
+    public function __construct(
+        private ResponseFactoryInterface $responseFactory,
+        private SessionInterface $session
+    )
     {
     }
 
@@ -28,8 +32,8 @@ readonly class ValidationExceptionMiddleware implements MiddlewareInterface
             $oldData = $request->getParsedBody();
             $sensitiveFields = ['password', 'confirmPassword'];
 
-            $_SESSION['errors'] = $e->errors;
-            $_SESSION['old'] = array_diff_key($oldData, array_flip($sensitiveFields));
+            $this->session->flash('errors', $e->errors);
+            $this->session->flash('old', array_diff_key($oldData, array_flip($sensitiveFields)));
 
             return $response->withHeader('Location', $referer)->withStatus(302);
         }

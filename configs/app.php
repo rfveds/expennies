@@ -32,5 +32,6 @@ return [
         'secure' => true,
         'httponly' => true,
         'samesite' => 'lax',
+        'flash_key' => $appSnakeName . '_flash',
     ],
 ];
