@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Controller\AuthController;
-use App\Controller\HomeController;
+use App\Controllers\AuthController;
+use App\Controllers\HomeController;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\GuestMiddleware;
 use Slim\App;

@@ -8,4 +8,7 @@ $containerBuilder = new ContainerBuilder();
 
 $containerBuilder->addDefinitions(__DIR__ . '/container_bindings.php');
 
-return $containerBuilder->build();
+try {
+    return $containerBuilder->build();
+} catch (Exception $e) {
+}
