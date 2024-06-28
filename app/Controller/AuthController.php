@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace App\Controller;
 
@@ -19,10 +19,7 @@ use Valitron\Validator;
 
 readonly class AuthController
 {
-    public function __construct(
-        private Twig          $twig,
-        private EntityManager $entityManager
-    )
+    public function __construct(private Twig $twig, private EntityManager $entityManager)
     {
     }
 
@@ -55,24 +52,25 @@ readonly class AuthController
         $data = $request->getParsedBody();
 
         $v = new Validator($data);
+
         $v->rule('required', ['name', 'email', 'password', 'confirmPassword']);
         $v->rule('email', 'email');
-        $v->rule('equals', 'confirmPassword', 'password')->label('Confirm password');
+        $v->rule('equals', 'confirmPassword', 'password')->label('Confirm Password');
         $v->rule(
-            fn($field, $value, $params, $fields) => !$this->entityManager->getRepository(User::class)->count(['email' => $value]),
+            fn($field, $value, $params, $fields) => ! $this->entityManager->getRepository(User::class)->count(
+                ['email' => $value]
+            ),
             'email'
         )->message('User with the given email address already exists');
 
-        if ($v->validate()) {
-            echo "Yay! We're all good!";
-        } else {
+        if (! $v->validate()) {
             throw new ValidationException($v->errors());
         }
 
-
         $user = new User();
-        $user->setEmail($data['email']);
+
         $user->setName($data['name']);
+        $user->setEmail($data['email']);
         $user->setPassword(password_hash($data['password'], PASSWORD_BCRYPT, ['cost' => 12]));
 
         $this->entityManager->persist($user);

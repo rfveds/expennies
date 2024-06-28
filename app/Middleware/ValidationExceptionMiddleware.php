@@ -25,6 +25,12 @@ readonly class ValidationExceptionMiddleware implements MiddlewareInterface
             $response = $this->responseFactory->createResponse();
             $referer  = $request->getServerParams()['HTTP_REFERER'];
 
+            $oldData = $request->getParsedBody();
+            $sensitiveFields = ['password', 'confirmPassword'];
+
+            $_SESSION['errors'] = $e->errors;
+            $_SESSION['old'] = array_diff_key($oldData, array_flip($sensitiveFields));
+
             return $response->withHeader('Location', $referer)->withStatus(302);
         }
     }
