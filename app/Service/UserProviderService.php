@@ -6,7 +6,7 @@ namespace App\Service;
 
 use App\Contracts\UserInterface;
 use App\Contracts\UserProviderServiceInterface;
-use App\DataObjects\RegisterUserData;
+use App\DataObjects\User\RegisterUserData;
 use App\Entity\User;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Exception\ORMException;

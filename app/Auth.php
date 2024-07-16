@@ -8,8 +8,7 @@ use App\Contracts\AuthInterface;
 use App\Contracts\SessionInterface;
 use App\Contracts\UserInterface;
 use App\Contracts\UserProviderServiceInterface;
-use App\DataObjects\RegisterUserData;
-use App\Entity\User;
+use App\DataObjects\User\RegisterUserData;
 
 class Auth implements AuthInterface
 {

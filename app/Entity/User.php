@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Contracts\UserInterface;
+use App\Entity\Traits\HasTimestamps;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -13,10 +14,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\OneToMany;
-use Doctrine\ORM\Mapping\PrePersist;
-use Doctrine\ORM\Mapping\PreUpdate;
 use Doctrine\ORM\Mapping\Table;
-use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
 
@@ -25,6 +23,8 @@ use Ramsey\Uuid\UuidInterface;
 #[HasLifecycleCallbacks]
 class User implements UserInterface
 {
+    use HasTimestamps;
+
     #[Id]
     #[Column(type: "uuid", unique: true)]
     #[GeneratedValue(strategy: "CUSTOM")]
@@ -40,12 +40,6 @@ class User implements UserInterface
     #[Column(type: Types::STRING)]
     private string $password;
 
-    #[Column(name: 'created_at')]
-    private \DateTime $createdAt;
-
-    #[Column(name: 'updated_at')]
-    private \DateTime $updatedAt;
-
     #[OneToMany(targetEntity: Transaction::class, mappedBy: 'user')]
     private Collection $transactions;
 
@@ -56,15 +50,6 @@ class User implements UserInterface
     {
         $this->categories = new ArrayCollection();
         $this->transactions = new ArrayCollection();
-    }
-
-    #[PrePersist, PreUpdate]
-    public function updateTimestamps(LifecycleEventArgs $args): void
-    {
-        if (!isset($this->createdAt)) {
-            $this->createdAt = new \DateTime();
-        }
-        $this->updatedAt = new \DateTime();
     }
 
     public function getId(): UuidInterface
@@ -100,26 +85,6 @@ class User implements UserInterface
     public function setPassword(string $password): void
     {
         $this->password = $password;
-    }
-
-    public function getCreatedAt(): \DateTime
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTime $createdAt): void
-    {
-        $this->createdAt = $createdAt;
-    }
-
-    public function getUpdatedAt(): \DateTime
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(\DateTime $updatedAt): void
-    {
-        $this->updatedAt = $updatedAt;
     }
 
     public function getTransactions(): Collection

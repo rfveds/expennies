@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\DataObjects;
+namespace App\DataObjects\Category;
 
-class RegisterUserData
+use App\Entity\User;
+
+class CreateCategoryData
 {
     public function __construct(
         public string $name,
-        public string $email,
-        public string $password
+        public User   $user
     )
     {
     }

@@ -6,17 +6,16 @@ namespace App\Controllers;
 
 use App\Contracts\AuthInterface;
 use App\Contracts\RequestValidatorFactoryInterface;
-use App\DataObjects\RegisterUserData;
+use App\DataObjects\User\RegisterUserData;
 use App\Exception\ValidationException;
 use App\RequestValidators\LoginUserRequestValidator;
 use App\RequestValidators\RegisterUserRequestValidator;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
-use Valitron\Validator;
 
 readonly class AuthController
 {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Contracts;
 
-use App\DataObjects\RegisterUserData;
+use App\DataObjects\User\RegisterUserData;
 use Ramsey\Uuid\UuidInterface;
 
 interface UserProviderServiceInterface

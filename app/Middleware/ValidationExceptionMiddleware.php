@@ -6,6 +6,7 @@ namespace App\Middleware;
 
 use App\Contracts\SessionInterface;
 use App\Exception\ValidationException;
+use App\ResponseFormatter;
 use App\Service\RequestService;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -18,7 +19,8 @@ readonly class ValidationExceptionMiddleware implements MiddlewareInterface
     public function __construct(
         private ResponseFactoryInterface $responseFactory,
         private SessionInterface         $session,
-        private RequestService           $requestService
+        private RequestService           $requestService,
+        private ResponseFormatter        $responseFormatter
     )
     {
     }
@@ -30,6 +32,10 @@ readonly class ValidationExceptionMiddleware implements MiddlewareInterface
         } catch (ValidationException $e) {
             $response = $this->responseFactory->createResponse();
             $referer = $this->requestService->getReferer($request);
+
+            if ($this->requestService->isXhr($request)) {
+                return $this->responseFormatter->asJson($response->withStatus(422), $e->errors);
+            }
 
             $oldData = $request->getParsedBody();
             $sensitiveFields = ['password', 'confirmPassword'];
